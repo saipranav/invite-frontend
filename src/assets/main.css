@@ -2,7 +2,7 @@
 
 body {
 	background: #61045F; /* fallback for old browsers */
-	background: linear-gradient(to left, #DC1165 , #61045F);
+	/*background: linear-gradient(to left, #DC1165 , #61045F);*/
 	color: #F5F5F5;
 	font-family: 'Pacifico', cursive;
 	font-size: 40pt;

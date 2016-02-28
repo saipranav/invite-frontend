@@ -11,6 +11,7 @@ let runServer = () => {
   browserSync({
     port: PORT,
     ui: false,
+    notify: false,
     startPath: '/',
     server: {
       baseDir: APP_DEST,
