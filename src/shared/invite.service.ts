@@ -11,15 +11,36 @@ export class InviteService {
 	}
 
 	check_already_invited(to_be_invited: string) {
-		return this._http.get('http://localhost:3002/api/invites/?filter[where][email][like]=^' + to_be_invited)
-			.map(response => response.json());
+		var url: string = 'http://{host}:{port}/api/invites/?filter[where][email][like]=^' + to_be_invited;
+
+		return this.discoverService()
+					.map( discoverData => {
+						url = url.replace( '{host}' , discoverData[0].ServiceAddress )
+						 		 .replace('{port}' , discoverData[0].ServicePort.toString());
+						return url;
+					} )
+					.flatMap(url => this._http.get(url))
+					.map( inviteResponse => inviteResponse.json() );
 	}
 
 	invite(to_be_invited: string) {
+		var url: string = 'http://{host}:{port}/api/invites/';
 		const headers = new Headers({ 'Content-Type': 'application/json' });
 		let invite_email = { email : to_be_invited };
-		return this._http.post('http://localhost:3002/api/invites/', JSON.stringify(invite_email), { headers: headers })
-			.map(response => response.json());
+
+		return this.discoverService()
+					.map( discoverData => {
+						url = url.replace( '{host}' , discoverData[0].ServiceAddress )
+						 		 .replace('{port}' , discoverData[0].ServicePort.toString());
+						return url;
+					} )
+					.flatMap(url => this._http.post(url , JSON.stringify(invite_email), { headers: headers }) )
+					.map( inviteResponse => inviteResponse.json() );
+	}
+
+	discoverService() {
+		return this._http.get('http://localhost:8500/v1/catalog/service/invite-lb')
+							.map( discoverData => discoverData.json() );
 	}
 
 }

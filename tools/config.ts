@@ -10,7 +10,9 @@ const ENVIRONMENTS = {
   PRODUCTION: 'prod'
 };
 
-export const PORT                 = argv['port']        || 3000;
+let tempPort = process.env.NOMAD_ADDR_http ? process.env.NOMAD_ADDR_http.split(':')[1] : 3000;
+
+export const PORT                 = tempPort || argv['port'] || 3000;
 export const PROJECT_ROOT         = normalize(join(__dirname, '..'));
 export const ENV                  = getEnvironment();
 export const DEBUG                = argv['debug']       || false;
@@ -22,7 +24,7 @@ export const HOT_LOADER_PORT      = 5578;
 
 export const BOOTSTRAP_MODULE     = ENABLE_HOT_LOADING ? 'hot_loader_main' : 'main';
 
-export const APP_TITLE            = 'My Angular2 App';
+export const APP_TITLE            = 'Invite yourself for The Fastest KT';
 
 export const APP_SRC              = 'src';
 export const ASSETS_SRC           = `${APP_SRC}/assets`;

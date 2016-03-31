@@ -1,6 +1,7 @@
 import {Http} from 'angular2/http';
 import 'rxjs/add/operator/map';
 import {Injectable} from 'angular2/core';
+require('rxjs/add/operator/mergeMap');
 
 @Injectable()
 export class PersonService {
@@ -11,7 +12,21 @@ export class PersonService {
 	}
 
 	find_person_with_email_like(email: string) {
-		return this._http.get('http://localhost:3001/api/persons?filter[where][email][like]=^' + email)
-			.map( response => response.json());
+		var url: any = 'http://{host}:{port}/api/persons?filter[where][email][like]=^' + email;
+
+		return this.discoverService()
+					.map( discoverData => {
+						url = url.replace( '{host}' , discoverData[0].ServiceAddress )
+						 		 .replace('{port}' , discoverData[0].ServicePort.toString());
+						return url;
+					} )
+					.flatMap(url => this._http.get(url))
+					.map( personResponse => personResponse.json() );
 	}
+
+	discoverService() {
+		return this._http.get('http://localhost:8500/v1/catalog/service/person-lb')
+							.map( discoverData => discoverData.json() );
+	}
+
 }
